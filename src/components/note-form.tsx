@@ -6,16 +6,23 @@ import { v4 as uuidV4 } from 'uuid'
 
 import { NoteData, Tag } from '../dtos'
 
-interface NoteFormProps {
+interface NoteFormProps extends Partial<NoteData> {
   availableTags: Tag[]
   onAddTag: (tag: Tag) => void
   onSubmit: (data: NoteData) => void
 }
 
-export function NoteForm({ availableTags, onAddTag, onSubmit }: NoteFormProps) {
+export function NoteForm({
+  availableTags,
+  markdown = '',
+  onAddTag,
+  onSubmit,
+  tags = [],
+  title = '',
+}: NoteFormProps) {
   const titleRef = useRef<HTMLInputElement>(null)
   const markdownRef = useRef<HTMLTextAreaElement>(null)
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(tags)
   const navigate = useNavigate()
 
   const handleSubmit = (ev: FormEvent) => {
@@ -37,7 +44,7 @@ export function NoteForm({ availableTags, onAddTag, onSubmit }: NoteFormProps) {
           <Col>
             <Form.Group controlId="title">
               <Form.Label>Title</Form.Label>
-              <Form.Control ref={titleRef} required />
+              <Form.Control ref={titleRef} defaultValue={title} required />
             </Form.Group>
           </Col>
           <Col>
@@ -63,7 +70,13 @@ export function NoteForm({ availableTags, onAddTag, onSubmit }: NoteFormProps) {
         </Row>
         <Form.Group controlId="markdown">
           <Form.Label>Body</Form.Label>
-              <Form.Control ref={markdownRef} required as="textarea" rows={15} />
+              <Form.Control
+                ref={markdownRef}
+                defaultValue={markdown}
+                required
+                as="textarea"
+                rows={15}
+              />
         </Form.Group>
 
         <Stack direction="horizontal" className="gap-2 justify-content-end">
