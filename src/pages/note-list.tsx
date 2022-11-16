@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Col,  Form,  Row, Stack } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ReactSelect from 'react-select'
 
-import { Tag } from '../dtos';
+import { Note, Tag } from '../dtos';
 
 interface NoteListProps {
   availableTags: Tag[]
+  notes: Note[]
 }
 
-export function NoteList({ availableTags }: NoteListProps) {
+export function NoteList({ availableTags, notes }: NoteListProps) {
   const [title, setTitle] = useState('')
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+
+  const filteredNotes = useMemo(() => {
+    return notes.filter(note => {
+      return (title === '' || note.title.toLowerCase().includes(title.toLowerCase()))
+        && (selectedTags.length === 0 || selectedTags.every(tag => note.tags.some(noteTag => {
+          return noteTag.id === tag.id
+        })))
+    })
+  }, [notes, selectedTags, title])
   
   return (
     <>
@@ -53,6 +63,13 @@ export function NoteList({ availableTags }: NoteListProps) {
           </Col>
         </Row>
       </Form>
+      <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
+        {filteredNotes.map(note => (
+          <Col key={note.id}>
+            <h1>{note.title}</h1>
+          </Col>
+        ))}
+      </Row>
     </>
   )
 }
