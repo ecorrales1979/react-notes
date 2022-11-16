@@ -12,3 +12,11 @@ export interface NoteData {
 export interface Note extends NoteData {
   id: string
 }
+
+export interface RawNoteData extends Omit<NoteData, 'tags'> {
+  tagIds: string[]
+}
+
+export interface RawNote extends RawNoteData {
+  id: string
+}
